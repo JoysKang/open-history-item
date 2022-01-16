@@ -1,4 +1,6 @@
-import { ActionPanel, OpenAction, OpenWithAction, List } from "@raycast/api";
+import { exec } from "child_process";
+import { ActionPanel, List, showToast, ToastStyle } from "@raycast/api";
+import React from "react";
 
 
 export default function Command() {
@@ -14,18 +16,18 @@ export default function Command() {
     {
       key: "2",
       ide: "Visual Studio Code",
-      icon: "icons/WebStorm.png",
+      icon: "icons/Visual Studio Code.png",
       name: "depushu-api",
       path: "/Users/joys/work/depushu-api"
     },
     {
       key: "3",
-      ide: "Visual Studio Code",
+      ide: "JetBrains Toolbox",
       icon: "icons/Visual Studio Code.png",
-      name: "Project 3",
-      path: "path/to/project/3"
+      name: "depushu-api",
+      path: "/Users/joys/work/depushu-api"
     }
-  ]
+  ];
 
   return (
     <List isLoading={projects.length === 0} searchBarPlaceholder="Filter articles by name...">
@@ -39,7 +41,7 @@ export default function Command() {
 
 function ProjectListItem(props: { project: Project }) {
   const project = props.project;
-  const title = "Open Code in " + project.ide;
+  const title = "Open Project in " + project.ide;
 
   return (
     <List.Item
@@ -47,18 +49,16 @@ function ProjectListItem(props: { project: Project }) {
       title={project.name}
       subtitle={project.path}
       icon={project.icon}
-      actions={[
+      actions={
         <ActionPanel>
-          <ActionPanel.Section>
-            <OpenAction
-              title={title}
-              icon={project.icon}
-              target={project.path}
-              application={project.ide}
-            />
-          </ActionPanel.Section>
+          <ActionPanel.Item title={title}
+                            icon={project.icon}
+                            onAction={() => {
+                              exec(`/Applications/PyCharm.app/Contents/MacOS/pycharm "${project.path}"`, (err) => err && showToast(ToastStyle.Failure, err?.message));
+                            }}
+          />
         </ActionPanel>
-      ]}
+      }
     />
   );
 }
