@@ -1,10 +1,10 @@
 import { exec } from "child_process";
-import { ActionPanel, List, showToast, ToastStyle } from "@raycast/api";
+import { getApplications, ActionPanel, List, showToast, ToastStyle, Application } from "@raycast/api";
 import React from "react";
+import { useEffect, useState } from "react";
 
 
 export default function Command() {
-
   const projects = [
     {
       key: "1",
@@ -29,19 +29,34 @@ export default function Command() {
     }
   ];
 
+  const [state, setState] = useState<{ apps: Application[] }>({ apps: [] });
+
+  useEffect(() => {
+    async function getApps() {
+      const apps = await getApplications();
+      setState((oldState) => ({
+        ...oldState,
+        apps: apps,
+      }));
+    }
+    getApps();
+  }, []);
+
   return (
     <List isLoading={projects.length === 0} searchBarPlaceholder="Filter articles by name...">
       {projects.map((project) => (
-        <ProjectListItem key={project.key} project={project} />
+        <ProjectListItem key={project.key} project={project} apps={state.apps} />
       ))}
     </List>
-  );
+  )
 }
 
 
-function ProjectListItem(props: { project: Project }) {
+function ProjectListItem(props: { project: Project, apps: Application[] }) {
   const project = props.project;
   const title = "Open Project in " + project.ide;
+  const execFile = props.apps.find((app) => app.name === project.ide);
+  const cmd = execFile ? `${execFile.path}/Contents/MacOS/${project.ide.toLowerCase()} "${project.path}"` : "";
 
   return (
     <List.Item
@@ -54,7 +69,7 @@ function ProjectListItem(props: { project: Project }) {
           <ActionPanel.Item title={title}
                             icon={project.icon}
                             onAction={() => {
-                              exec(`/Applications/PyCharm.app/Contents/MacOS/pycharm "${project.path}"`, (err) => err && showToast(ToastStyle.Failure, err?.message));
+                              exec(cmd, (err) => err && showToast(ToastStyle.Failure, err?.message));
                             }}
           />
         </ActionPanel>
