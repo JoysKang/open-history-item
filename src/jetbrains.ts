@@ -1,14 +1,14 @@
 import { randomId, Application } from "@raycast/api";
 import { readFileSync } from "fs";
 import { basename } from "path";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { parseString } from "xml2js";
 import { checkPath, searchFiles, home, Project } from "./util";
-import * as buffer from "buffer";
+import { Buffer } from "buffer";
 
 
-// @ts-ignore
-function jetBrainsParsers(data: buffer, fileName: string, apps: Application[]): Project[] {
+function jetBrainsParsers(data: Buffer, fileName: string, apps: Application[]): Project[] {
   const projectList: Project[] = [];
   const ideName: RegExpMatchArray | null = fileName.split("JetBrains/")[1].match(/^[A-Za-z]+/);
   const ide = ideName ? ideName[0] : "";

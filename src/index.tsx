@@ -3,6 +3,7 @@ import { getApplications, ActionPanel, List, showToast, closeMainWindow, ToastSt
 import React from "react";
 import { useEffect, useState } from "react";
 import { getJetBrainsProjects } from "./jetbrains";
+import { getVSCodeProjects } from "./vscode";
 import { Project } from "./util";
 
 
@@ -21,7 +22,8 @@ export default function Command() {
   }, []);
 
   console.time()
-  let projects: Project[] = getJetBrainsProjects(state.apps);
+  // let projects: Project[] = getJetBrainsProjects(state.apps);
+  let projects: Project[] = getVSCodeProjects();
   // 排序
   projects = projects
     .sort((item1, item2) => item2.atime - item1.atime)
@@ -47,6 +49,7 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
   } else if (project.category === "vscode") {
     cmd = `open -u "vscode://open?file=${project.path}"`;
   }
+  // console.log(cmd);
 
   return (
     <List.Item
