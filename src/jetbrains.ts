@@ -1,16 +1,12 @@
-import { randomId } from "@raycast/api";
-import { readFileSync, lstatSync, readdirSync } from "fs";
+import { randomId, Application } from "@raycast/api";
+import { readFileSync } from "fs";
 import { basename } from "path";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import xml2js from "xml2js";
+import { parseString } from "xml2js";
 import { checkPath, searchFiles, home, Project } from "./util";
 import * as buffer from "buffer";
 
-const parser = new xml2js.Parser();
 
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 function jetBrainsParsers(data: buffer, fileName: string): Project[] {
   const projectList: Project[] = [];
@@ -18,7 +14,7 @@ function jetBrainsParsers(data: buffer, fileName: string): Project[] {
   const ide = ideName ? ideName[0] : ""
   const icon: string = ideName ? "icons/".concat(ide).concat(".png") : "";
 
-  parser.parseString(data, function (err: any, result: { application: { component: any[]; }; }) {
+  parseString(data, function (err: any, result: { application: { component: any[]; }; }) {
     const component = result.application.component[0];
     const option =
       component.option[
@@ -50,7 +46,7 @@ function jetBrainsParsers(data: buffer, fileName: string): Project[] {
 
 
 // 获取 JetBrains 的项目列表
-export function getBrandJetBrainsProjects(): Project[] {
+export function getJetBrainsProjects(): Project[] {
   const fileList = searchFiles("/Library/Application Support/JetBrains/");
   const projectList: Project[] = [];
   for (const file of fileList) {
@@ -70,4 +66,21 @@ export function getBrandJetBrainsProjects(): Project[] {
     }
   }
   return projectList;
+}
+
+
+export function getJetBrainsExecFile(ide: string, apps: Application[]): string {
+  const bin = "/usr/local/bin/" + ide.toLowerCase()  // 优先使用生成的可执行文件
+  const [isExist, _] = checkPath(bin);
+  if (isExist) {
+    return bin
+  }
+
+  let execFile: Application | undefined = { name: "", path: "", bundleId: "" };
+  if (ide === "PyCharm") {
+    execFile = apps.find((app) => app.name.indexOf(ide) !== -1);
+  } else {
+    execFile = apps.find((app) => app.name === ide);
+  }
+  return execFile ? execFile.path : "";
 }

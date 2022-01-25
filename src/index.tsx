@@ -2,13 +2,13 @@ import { exec } from "child_process";
 import { getApplications, ActionPanel, List, showToast, closeMainWindow, ToastStyle, Application } from "@raycast/api";
 import React from "react";
 import { useEffect, useState } from "react";
-import { getBrandJetBrainsProjects } from "./jetbrains";
+import { getJetBrainsProjects, getJetBrainsExecFile } from "./jetbrains";
 import { Project } from "./util";
 
 
 export default function Command() {
   console.time()
-  let projects: Project[] = getBrandJetBrainsProjects()
+  let projects: Project[] = getJetBrainsProjects()
   // 排序
   projects = projects
     .sort((item1, item2) => item2.atime - item1.atime)
@@ -44,21 +44,14 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
   let cmd = "";
 
   if (project.category === "JetBrains") {
-    const execFile = props.apps.find((app) => app.name === project.ide);
+    const execFile = getJetBrainsExecFile(project.ide, props.apps);
     if (!execFile) {
       cmd = "";
     } else {
-      const path = execFile.path.replace(/\s+/g, "\\ ");
-      if (execFile.path.toLowerCase().indexOf("toolbox") !== -1) {
-        cmd = `${path}/Contents/MacOS/jetbrains-toolbox-launcher "${project.path}"`;
-      } else {
-        cmd = `${execFile.path}/Contents/MacOS/${project.ide.toLowerCase()} "${project.path}"`;
-      }
+      cmd = `${execFile} "${project.path}"`;
     }
   } else if (project.category === "vscode") {
     cmd = `open -u "vscode://open?file=${project.path}"`;
-  // } else if (project.category === "JetBrains") {
-  //   cmd = `open -u "${project.ide}://open?file=${project.path}"`;
   }
 
   return (
