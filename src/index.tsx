@@ -2,20 +2,12 @@ import { exec } from "child_process";
 import { getApplications, ActionPanel, List, showToast, closeMainWindow, ToastStyle, Application } from "@raycast/api";
 import React from "react";
 import { useEffect, useState } from "react";
-import { getJetBrainsProjects, getJetBrainsExecFile } from "./jetbrains";
+import { getJetBrainsProjects } from "./jetbrains";
 import { Project } from "./util";
 
 
 export default function Command() {
-  console.time()
-  let projects: Project[] = getJetBrainsProjects()
-  // 排序
-  projects = projects
-    .sort((item1, item2) => item2.atime - item1.atime)
-  console.timeEnd()
-
   const [state, setState] = useState<{ apps: Application[] }>({ apps: [] });
-
   useEffect(() => {
     async function getApps() {
       const apps = await getApplications();
@@ -27,6 +19,13 @@ export default function Command() {
 
     getApps();
   }, []);
+
+  console.time()
+  let projects: Project[] = getJetBrainsProjects(state.apps);
+  // 排序
+  projects = projects
+    .sort((item1, item2) => item2.atime - item1.atime)
+  console.timeEnd()
 
   return (
     <List isLoading={projects.length === 0} searchBarPlaceholder="Filter articles by name...">
@@ -44,12 +43,7 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
   let cmd = "";
 
   if (project.category === "JetBrains") {
-    const execFile = getJetBrainsExecFile(project.ide, props.apps);
-    if (!execFile) {
-      cmd = "";
-    } else {
-      cmd = `${execFile} "${project.path}"`;
-    }
+    cmd = `${project.executableFile} "${project.path}"`;
   } else if (project.category === "vscode") {
     cmd = `open -u "vscode://open?file=${project.path}"`;
   }

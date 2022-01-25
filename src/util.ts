@@ -12,6 +12,7 @@ export type Project = {
   icon: string;
   name: string;
   path: string;
+  executableFile: string;
   category: string;
   atime: number;
 };

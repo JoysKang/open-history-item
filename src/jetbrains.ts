@@ -8,13 +8,14 @@ import * as buffer from "buffer";
 
 
 // @ts-ignore
-function jetBrainsParsers(data: buffer, fileName: string): Project[] {
+function jetBrainsParsers(data: buffer, fileName: string, apps: Application[]): Project[] {
   const projectList: Project[] = [];
-  const ideName: RegExpMatchArray | null = fileName.split("JetBrains/")[1].match(/^[A-Za-z]+/)
-  const ide = ideName ? ideName[0] : ""
+  const ideName: RegExpMatchArray | null = fileName.split("JetBrains/")[1].match(/^[A-Za-z]+/);
+  const ide = ideName ? ideName[0] : "";
   const icon: string = ideName ? "icons/".concat(ide).concat(".png") : "";
+  const executableFile = getJetBrainsExecutableFileFile(ide, apps);
 
-  parseString(data, function (err: any, result: { application: { component: any[]; }; }) {
+  parseString(data, function(err: any, result: { application: { component: any[]; }; }) {
     const component = result.application.component[0];
     const option =
       component.option[
@@ -22,11 +23,11 @@ function jetBrainsParsers(data: buffer, fileName: string): Project[] {
         ];
 
     for (let i = 0; i < option.map[0].entry.length; i++) {
-      const item = option.map[0].entry[i]
-      const projectPath = item.$.key.replace("$USER_HOME$", home)   // "$USER_HOME$" 得替换成用户的家目录
-      const [isExist, _] = checkPath(projectPath)
+      const item = option.map[0].entry[i];
+      const projectPath = item.$.key.replace("$USER_HOME$", home);   // "$USER_HOME$" 得替换成用户的家目录
+      const [isExist, _] = checkPath(projectPath);
       if (!isExist) {
-        continue
+        continue;
       }
       const options = item.value[0].RecentProjectMetaInfo[0].option;
       const atime: number = options[options.findIndex((item: { $: { name: string; }; }) => item.$.name == "projectOpenTimestamp")].$.value;
@@ -36,6 +37,7 @@ function jetBrainsParsers(data: buffer, fileName: string): Project[] {
         icon: icon,
         name: basename(projectPath),
         path: projectPath,
+        executableFile: executableFile,
         category: "JetBrains",
         atime: atime
       });
@@ -46,7 +48,7 @@ function jetBrainsParsers(data: buffer, fileName: string): Project[] {
 
 
 // 获取 JetBrains 的项目列表
-export function getJetBrainsProjects(): Project[] {
+export function getJetBrainsProjects(apps: Application[]): Project[] {
   const fileList = searchFiles("/Library/Application Support/JetBrains/");
   const projectList: Project[] = [];
   for (const file of fileList) {
@@ -55,25 +57,25 @@ export function getJetBrainsProjects(): Project[] {
       continue;
     }
 
-    const data = readFileSync(file)
+    const data = readFileSync(file);
     if (!data.length) {
       continue;
     }
 
-    const projects: Project[] = jetBrainsParsers(data, file)
+    const projects: Project[] = jetBrainsParsers(data, file, apps);
     if (projects.length) {
-      projectList.push(...projects)
+      projectList.push(...projects);
     }
   }
   return projectList;
 }
 
 
-export function getJetBrainsExecFile(ide: string, apps: Application[]): string {
-  const bin = "/usr/local/bin/" + ide.toLowerCase()  // 优先使用生成的可执行文件
+export function getJetBrainsExecutableFileFile(ide: string, apps: Application[]): string {
+  const bin = "/usr/local/bin/" + ide.toLowerCase();  // 优先使用生成的可执行文件
   const [isExist, _] = checkPath(bin);
   if (isExist) {
-    return bin
+    return bin;
   }
 
   let execFile: Application | undefined = { name: "", path: "", bundleId: "" };
