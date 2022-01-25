@@ -9,7 +9,7 @@ function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; w
 }
 
 
-export function getVSCodeProjects() {
+export async function getVSCodeProjects(): Promise<Project[]> {
   const fileName = home.concat("/Library/Application Support/Code/storage.json");
   const [isExist, atime] = checkPath(fileName);
   if (!isExist) {
@@ -22,7 +22,6 @@ export function getVSCodeProjects() {
   }
 
   data = JSON.parse(data)
-  console.log(data)
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const projects = data["openedPathsList"]["entries"]     // 需清除掉 file://

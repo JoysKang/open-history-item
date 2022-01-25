@@ -8,22 +8,31 @@ import { Project } from "./util";
 
 
 export default function Command() {
-  const [state, setState] = useState<{ apps: Application[] }>({ apps: [] });
+  console.time()
+  const [state, setState] = useState<{
+    apps: Application[],
+    jetbrains: Project[],
+    vscode: Project[] }>({
+    apps: [],
+    jetbrains: [],
+    vscode: []
+  });
   useEffect(() => {
     async function getApps() {
       const apps = await getApplications();
+      const jetbrains = await getJetBrainsProjects(apps);
+      const vscode = await getVSCodeProjects();
       setState((oldState) => ({
         ...oldState,
-        apps: apps
+        apps: apps,
+        jetbrains: jetbrains,
+        vscode: vscode
       }));
     }
-
     getApps();
   }, []);
 
-  console.time()
-  // let projects: Project[] = getJetBrainsProjects(state.apps);
-  let projects: Project[] = getVSCodeProjects();
+  let projects = state.jetbrains.concat(state.vscode);
   // 排序
   projects = projects
     .sort((item1, item2) => item2.atime - item1.atime)

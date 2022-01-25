@@ -8,12 +8,12 @@ import { checkPath, searchFiles, home, Project } from "./util";
 import { Buffer } from "buffer";
 
 
-function jetBrainsParsers(data: Buffer, fileName: string, apps: Application[]): Project[] {
+async function jetBrainsParsers(data: Buffer, fileName: string, apps: Application[]): Promise<Project[]> {
   const projectList: Project[] = [];
   const ideName: RegExpMatchArray | null = fileName.split("JetBrains/")[1].match(/^[A-Za-z]+/);
   const ide = ideName ? ideName[0] : "";
   const icon: string = ideName ? "icons/".concat(ide).concat(".png") : "";
-  const executableFile = getJetBrainsExecutableFileFile(ide, apps);
+  const executableFile = await getJetBrainsExecutableFileFile(ide, apps);
 
   parseString(data, function(err: any, result: { application: { component: any[]; }; }) {
     const component = result.application.component[0];
@@ -48,7 +48,7 @@ function jetBrainsParsers(data: Buffer, fileName: string, apps: Application[]): 
 
 
 // 获取 JetBrains 的项目列表
-export function getJetBrainsProjects(apps: Application[]): Project[] {
+export async function getJetBrainsProjects(apps: Application[]): Promise<Project[]> {
   const fileList = searchFiles("/Library/Application Support/JetBrains/");
   const projectList: Project[] = [];
   for (const file of fileList) {
@@ -62,7 +62,7 @@ export function getJetBrainsProjects(apps: Application[]): Project[] {
       continue;
     }
 
-    const projects: Project[] = jetBrainsParsers(data, file, apps);
+    const projects: Project[] = await jetBrainsParsers(data, file, apps);
     if (projects.length) {
       projectList.push(...projects);
     }
@@ -71,7 +71,7 @@ export function getJetBrainsProjects(apps: Application[]): Project[] {
 }
 
 
-export function getJetBrainsExecutableFileFile(ide: string, apps: Application[]): string {
+export async function getJetBrainsExecutableFileFile(ide: string, apps: Application[]): Promise<string> {
   const bin = "/usr/local/bin/" + ide.toLowerCase();  // 优先使用生成的可执行文件
   const [isExist, _] = checkPath(bin);
   if (isExist) {
