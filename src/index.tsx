@@ -4,6 +4,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { getJetBrainsProjects } from "./jetbrains";
 import { getVSCodeProjects } from "./vscode";
+import { getXcodeParsers } from "./xcode";
 import { Project } from "./util";
 
 
@@ -12,27 +13,31 @@ export default function Command() {
   const [state, setState] = useState<{
     apps: Application[],
     jetbrains: Project[],
-    vscode: Project[] }>({
+    vscode: Project[],
+    xcode: Project[] }>({
     apps: [],
     jetbrains: [],
-    vscode: []
+    vscode: [],
+    xcode: []
   });
   useEffect(() => {
     async function getApps() {
       const apps = await getApplications();
       const jetbrains = await getJetBrainsProjects(apps);
       const vscode = await getVSCodeProjects();
+      const xcode = await getXcodeParsers();
       setState((oldState) => ({
         ...oldState,
         apps: apps,
         jetbrains: jetbrains,
-        vscode: vscode
+        vscode: vscode,
+        xcode: xcode
       }));
     }
     getApps();
   }, []);
 
-  let projects = state.jetbrains.concat(state.vscode);
+  let projects = state.jetbrains.concat(state.vscode).concat(state.xcode);
   // 排序
   projects = projects
     .sort((item1, item2) => item2.atime - item1.atime)
@@ -57,8 +62,10 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
     cmd = `${project.executableFile} "${project.path}"`;
   } else if (project.category === "vscode") {
     cmd = `open -u "vscode://open?file=${project.path}"`;
+  } else if (project.category === "Xcode") {
+    cmd = `open -u "xcode://open?file=${project.path}"`;
   }
-  // console.log(cmd);
+  console.log(cmd);
 
   return (
     <List.Item
