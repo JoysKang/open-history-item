@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import { basename } from "path";
-import { checkPath, getLocalStorage, home, Project, removeLocalStorage, setLocalStorage } from "./util";
+import { checkPath, getLocalStorage, home, Project, removeLocalStorage, setLocalStorage } from "../util";
 import { randomId } from "@raycast/api";
 
 export async function sublimeParsers(): Promise<Project[]> {

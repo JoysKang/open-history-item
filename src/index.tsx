@@ -2,10 +2,10 @@ import { exec } from "child_process";
 import { getApplications, ActionPanel, List, showToast, closeMainWindow, ToastStyle, Application } from "@raycast/api";
 import React from "react";
 import { useEffect, useState } from "react";
-import { getJetBrainsProjects } from "./jetbrains";
-import { getVSCodeProjects } from "./vscode";
-import { getXcodeParsers } from "./xcode";
-import { sublimeParsers } from "./sublimeText";
+import { getJetBrainsProjects } from "./ides/jetbrains";
+import { getVSCodeProjects } from "./ides/vscode";
+import { getXcodeParsers } from "./ides/xcode";
+import { sublimeParsers } from "./ides/sublimeText";
 import { Project } from "./util";
 
 

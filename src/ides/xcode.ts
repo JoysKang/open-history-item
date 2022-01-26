@@ -1,6 +1,6 @@
 import { randomId } from "@raycast/api";
 import { execSync } from "child_process";
-import { home, Project, checkPath, getLocalStorage, removeLocalStorage, setLocalStorage } from "./util";
+import { home, Project, checkPath, getLocalStorage, removeLocalStorage, setLocalStorage } from "../util";
 import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isEmpty, isNil } = require('licia');

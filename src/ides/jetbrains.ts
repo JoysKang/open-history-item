@@ -4,7 +4,7 @@ import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { parseString } from "xml2js";
-import { checkPath, getLocalStorage, home, Project, removeLocalStorage, searchFiles } from "./util";
+import { checkPath, getLocalStorage, home, Project, removeLocalStorage, searchFiles } from "../util";
 import { Buffer } from "buffer";
 
 
