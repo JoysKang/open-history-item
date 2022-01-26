@@ -11,7 +11,7 @@ function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; w
 
 export async function getVSCodeProjects(): Promise<Project[]> {
   const fileName = home.concat("/Library/Application Support/Code/storage.json");
-  const [isExist, atime] = checkPath(fileName);
+  const [isExist, atime, _] = checkPath(fileName);
   if (!isExist) {
     return []
   }

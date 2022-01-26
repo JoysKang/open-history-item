@@ -25,7 +25,7 @@ async function jetBrainsParsers(data: Buffer, fileName: string, apps: Applicatio
     for (let i = 0; i < option.map[0].entry.length; i++) {
       const item = option.map[0].entry[i];
       const projectPath = item.$.key.replace("$USER_HOME$", home);   // "$USER_HOME$" 得替换成用户的家目录
-      const [isExist, _] = checkPath(projectPath);
+      const isExist = checkPath(projectPath)[0];
       if (!isExist) {
         continue;
       }
@@ -52,7 +52,7 @@ export async function getJetBrainsProjects(apps: Application[]): Promise<Project
   const fileList = searchFiles("/Library/Application Support/JetBrains/");
   const projectList: Project[] = [];
   for (const file of fileList) {
-    const [isExist, _] = checkPath(file);
+    const isExist = checkPath(file)[0];
     if (!isExist) {
       continue;
     }
@@ -73,7 +73,7 @@ export async function getJetBrainsProjects(apps: Application[]): Promise<Project
 
 export async function getJetBrainsExecutableFileFile(ide: string, apps: Application[]): Promise<string> {
   const bin = "/usr/local/bin/" + ide.toLowerCase();  // 优先使用生成的可执行文件
-  const [isExist, _] = checkPath(bin);
+  const isExist = checkPath(bin)[0];
   if (isExist) {
     return bin;
   }

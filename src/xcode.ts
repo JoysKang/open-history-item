@@ -1,9 +1,9 @@
-import { randomId } from "@raycast/api";
+import { getLocalStorageItem, randomId, setLocalStorageItem, clearLocalStorage } from "@raycast/api";
+import { execSync } from "child_process";
+import { home, Project, checkPath } from "./util";
+import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isEmpty, isNil } = require('licia');
-import { execSync } from "child_process";
-import { checkPath, home, Project } from "./util";
-import { basename } from "path";
 
 
 function generateScript(configPath: string): string {
@@ -30,28 +30,43 @@ function generateScript(configPath: string): string {
 }
 
 
-function readXcodeHistory() : [string[], number] {
+function readXcodeHistory() : string[] {
   // 判断 com.apple.dt.xcode.sfl2 文件是否存在
   const configPath = home.concat("/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2")
-  const [isExist, atime] = checkPath(configPath);
-  if (!isExist) {
-    return [[], 0];
-  }
-
   const result = execSync(generateScript(configPath), {encoding: 'utf-8'})
   if (!isNil(result) && !isEmpty(result)) {
-    const paths = result.split(',').filter(p => p.trim().endsWith('.xcodeproj'));
-    return [paths, atime]
+    return result.split(', ').map(p => p.trim())
   }
 
-  return [[], 0];
+  return [];
 }
 
 
 export async function getXcodeParsers() {
-  console.time('start')
-  const [data, atime] = readXcodeHistory()
-  console.timeEnd('start')
+  // 清空缓存, 测试用
+  // await clearLocalStorage();
+
+  // 判断 com.apple.dt.xcode.sfl2 文件是否存在
+  const configPath = home.concat("/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2")
+  const [isExist, atime, mtime] = checkPath(configPath);
+  if (!isExist) {
+    return []
+  }
+
+  const lastTime: string | undefined = await getLocalStorageItem("lastTime");
+  console.log(lastTime, "lastTime", mtime)
+  // 不常使用，使用数据库记录(缓存)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (mtime.toString() === lastTime) {
+    const a = await getLocalStorageItem("stdout")
+    console.log(a, "a")
+    console.log(typeof a, "typeof a")
+    return JSON.parse(<string>await getLocalStorageItem("stdout"))
+  } else {
+    await setLocalStorageItem("lastTime", mtime.toString());
+  }
+  const data = readXcodeHistory()
   if (!data.length) {
     return [];
   }
@@ -70,5 +85,6 @@ export async function getXcodeParsers() {
       atime: atime
     });
   }
+  await setLocalStorageItem("stdout", JSON.stringify(projectList));
   return projectList;
 }

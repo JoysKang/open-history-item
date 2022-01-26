@@ -19,12 +19,12 @@ export type Project = {
 
 
 // 判断路径是否存在
-export function checkPath(path: string): [boolean, number] {
+export function checkPath(path: string): [boolean, number, number] {
   try {
     const file = lstatSync(path);
-    return [true, file.atimeMs]
+    return [true, file.atimeMs, file.mtimeMs];
   } catch (err) {
-    return [false, 0]
+    return [false, 0, 0]
   }
 }
 

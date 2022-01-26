@@ -63,9 +63,9 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
   } else if (project.category === "vscode") {
     cmd = `open -u "vscode://open?file=${project.path}"`;
   } else if (project.category === "Xcode") {
-    cmd = `open -u "xcode://open?file=${project.path}"`;
+    cmd = `open "${project.path}"`;
+    // console.log(cmd);
   }
-  console.log(cmd);
 
   return (
     <List.Item
