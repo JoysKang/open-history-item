@@ -49,7 +49,7 @@ export default function Command() {
   console.timeEnd()
 
   return (
-    <List isLoading={projects.length === 0} searchBarPlaceholder="Filter articles by name...">
+    <List isLoading={projects.length === 0} searchBarPlaceholder="Search your project by name...">
       {projects.map((project) => (
         <ProjectListItem key={project.key} project={project} apps={state.apps} />
       ))}
