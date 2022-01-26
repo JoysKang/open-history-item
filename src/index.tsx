@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getJetBrainsProjects } from "./jetbrains";
 import { getVSCodeProjects } from "./vscode";
 import { getXcodeParsers } from "./xcode";
+import { sublimeParsers } from "./sublimeText";
 import { Project } from "./util";
 
 
@@ -14,11 +15,13 @@ export default function Command() {
     apps: Application[],
     jetbrains: Project[],
     vscode: Project[],
-    xcode: Project[] }>({
+    xcode: Project[],
+    sublimeText: Project[]}>({
     apps: [],
     jetbrains: [],
     vscode: [],
-    xcode: []
+    xcode: [],
+    sublimeText: []
   });
   useEffect(() => {
     async function getApps() {
@@ -26,18 +29,20 @@ export default function Command() {
       const jetbrains = await getJetBrainsProjects(apps);
       const vscode = await getVSCodeProjects();
       const xcode = await getXcodeParsers();
+      const sublimeText = await sublimeParsers();
       setState((oldState) => ({
         ...oldState,
         apps: apps,
         jetbrains: jetbrains,
         vscode: vscode,
-        xcode: xcode
+        xcode: xcode,
+        sublimeText: sublimeText
       }));
     }
     getApps();
   }, []);
 
-  let projects = state.jetbrains.concat(state.vscode).concat(state.xcode);
+  let projects = state.jetbrains.concat(state.vscode).concat(state.xcode).concat(state.sublimeText);
   // 排序
   projects = projects
     .sort((item1, item2) => item2.atime - item1.atime)
@@ -64,6 +69,8 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
     cmd = `open -u "vscode://open?file=${project.path}"`;
   } else if (project.category === "Xcode") {
     cmd = `open "${project.path}"`;
+  } else if (project.category === "sublimeText") {
+    cmd = `open -a "sublime text" "${project.path}"`;
     // console.log(cmd);
   }
 

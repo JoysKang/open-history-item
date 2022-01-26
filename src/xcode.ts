@@ -1,6 +1,6 @@
-import { randomId, setLocalStorageItem } from "@raycast/api";
+import { randomId } from "@raycast/api";
 import { execSync } from "child_process";
-import { home, Project, checkPath, getLocalStorage } from "./util";
+import { home, Project, checkPath, getLocalStorage, removeLocalStorage, setLocalStorage } from "./util";
 import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isEmpty, isNil } = require('licia');
@@ -47,6 +47,7 @@ export async function getXcodeParsers() {
   // 读取 atime, mtime
   const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {
+    await removeLocalStorage("sublimeText");
     return []
   }
 
@@ -70,7 +71,6 @@ export async function getXcodeParsers() {
       atime: atime
     });
   }
-  await setLocalStorageItem("xcode-stdout", JSON.stringify(projectList));
-  await setLocalStorageItem("xcode-lastTime", mtime);
+  await setLocalStorage(projectList, "xcode", mtime); // 缓存数据
   return projectList;
 }

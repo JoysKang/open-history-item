@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
-import { randomId, setLocalStorageItem } from "@raycast/api";
+import { randomId } from "@raycast/api";
 import { basename } from "path";
-import { checkPath, getLocalStorage, home, Project } from "./util";
+import { checkPath, getLocalStorage, home, Project, removeLocalStorage, setLocalStorage } from "./util";
 
 
 function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; workspace: { configPath: string; }; }) {
@@ -13,6 +13,7 @@ export async function getVSCodeProjects(): Promise<Project[]> {
   const file = home.concat("/Library/Application Support/Code/storage.json");
   const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {
+    await removeLocalStorage("sublimeText");
     return []
   }
 
@@ -50,7 +51,6 @@ export async function getVSCodeProjects(): Promise<Project[]> {
       atime: atime
     });
   }
-  await setLocalStorageItem("Visual Studio Code-stdout", JSON.stringify(projectList));
-  await setLocalStorageItem("Visual Studio Code-lastTime", mtime);
+  await setLocalStorage(projectList, "Visual Studio Code", mtime); // 缓存数据
   return projectList;
 }

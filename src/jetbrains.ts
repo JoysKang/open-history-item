@@ -1,16 +1,21 @@
-import { randomId, Application, setLocalStorageItem } from "@raycast/api";
+import { Application, randomId, setLocalStorageItem } from "@raycast/api";
 import { readFileSync } from "fs";
 import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { parseString } from "xml2js";
-import { checkPath, searchFiles, home, Project, getLocalStorage } from "./util";
+import { checkPath, getLocalStorage, home, Project, removeLocalStorage, searchFiles } from "./util";
 import { Buffer } from "buffer";
 
 
-async function jetBrainsParsers(data: Buffer, file: string, mtime: number, apps: Application[]): Promise<Project[]> {
+async function getIdeName(file: string): Promise<string> {
   const ideName: RegExpMatchArray | null = file.split("JetBrains/")[1].match(/^[A-Za-z]+/);
-  const ide = ideName ? ideName[0] : "";
+  return ideName ? ideName[0] : "";
+}
+
+
+async function jetBrainsParsers(data: Buffer, file: string, mtime: number, apps: Application[]): Promise<Project[]> {
+  const ide = await getIdeName(file);
   // 读取缓存
   const [LocalStorageData, isGet] = await getLocalStorage(file, ide, mtime);
   if (isGet) {
@@ -18,7 +23,7 @@ async function jetBrainsParsers(data: Buffer, file: string, mtime: number, apps:
   }
 
   const projectList: Project[] = [];
-  const icon: string = ideName ? "icons/".concat(ide).concat(".png") : "";
+  const icon: string = ide ? "icons/".concat(ide).concat(".png") : "";
   const executableFile = await getJetBrainsExecutableFileFile(ide, apps);
 
   parseString(data, function(err: any, result: { application: { component: any[]; }; }) {
@@ -62,6 +67,8 @@ export async function getJetBrainsProjects(apps: Application[]): Promise<Project
   for (const file of fileList) {
     const [isExist, _, mtime] = checkPath(file);
     if (!isExist) {
+      const ide = await getIdeName(file);
+      await removeLocalStorage(ide);
       continue;
     }
 

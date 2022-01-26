@@ -1,6 +1,6 @@
 import { lstatSync, readdirSync } from "fs";
 import { homedir } from "os"
-import { getLocalStorageItem } from "@raycast/api";
+import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from "@raycast/api";
 
 
 // home directory
@@ -117,4 +117,22 @@ export async function getLocalStorage(file: string, ide: string, mtime: number):
   }
 
   return [[], false];
+}
+
+
+export async function setLocalStorage(projectList:Project[], ide: string, mtime: number) {
+  // 清空缓存, 测试用
+  // await clearLocalStorage();
+
+  await setLocalStorageItem(ide.concat("-stdout"), JSON.stringify(projectList));
+  await setLocalStorageItem(ide.concat("-lastTime"), mtime);
+}
+
+
+export async function removeLocalStorage(ide: string) {
+  // 清空缓存, 测试用
+  // await clearLocalStorage();
+
+  await removeLocalStorageItem(ide.concat("-lastTime"));
+  await removeLocalStorageItem(ide.concat("-stdout"));
 }
