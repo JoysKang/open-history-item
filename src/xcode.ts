@@ -1,6 +1,6 @@
 import { getLocalStorageItem, randomId, setLocalStorageItem, clearLocalStorage } from "@raycast/api";
 import { execSync } from "child_process";
-import { home, Project, checkPath } from "./util";
+import { home, Project, checkPath, getLocalStorage } from "./util";
 import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isEmpty, isNil } = require('licia');
@@ -43,34 +43,19 @@ function readXcodeHistory() : string[] {
 
 
 export async function getXcodeParsers() {
-  // 清空缓存, 测试用
-  // await clearLocalStorage();
-
-  // 判断 com.apple.dt.xcode.sfl2 文件是否存在
-  const configPath = home.concat("/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2")
-  const [isExist, atime, mtime] = checkPath(configPath);
+  const file = home.concat("/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2")
+  // 读取 atime, mtime
+  const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {
     return []
   }
 
-  const lastTime: string | undefined = await getLocalStorageItem("lastTime");
-  console.log(lastTime, "lastTime", mtime)
-  // 不常使用，使用数据库记录(缓存)
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (mtime.toString() === lastTime) {
-    const a = await getLocalStorageItem("stdout")
-    console.log(a, "a")
-    console.log(typeof a, "typeof a")
-    return JSON.parse(<string>await getLocalStorageItem("stdout"))
-  } else {
-    await setLocalStorageItem("lastTime", mtime.toString());
-  }
-  const data = readXcodeHistory()
-  if (!data.length) {
-    return [];
+  const [LocalStorageData, isGet] = await getLocalStorage(file, "xcode", mtime);
+  if (isGet) {
+    return LocalStorageData
   }
 
+  const data = readXcodeHistory();
   const projectList: Project[] = [];
   for (let i = 0; i < data.length; i++) {
     const projectPath = data[i]
@@ -85,6 +70,7 @@ export async function getXcodeParsers() {
       atime: atime
     });
   }
-  await setLocalStorageItem("stdout", JSON.stringify(projectList));
+  await setLocalStorageItem("xcode-stdout", JSON.stringify(projectList));
+  await setLocalStorageItem("xcode-lastTime", mtime);
   return projectList;
 }

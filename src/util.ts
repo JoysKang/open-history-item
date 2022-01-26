@@ -1,5 +1,6 @@
 import { lstatSync, readdirSync } from "fs";
 import { homedir } from "os"
+import { getLocalStorageItem, setLocalStorageItem } from "@raycast/api";
 
 
 // home directory
@@ -102,4 +103,18 @@ export function searchFiles(element: string): string[] {
   }
 
   return []
+}
+
+
+export async function getLocalStorage(file: string, ide: string, mtime: number): Promise<[[], boolean]> {
+  // 清空缓存, 测试用
+  // await clearLocalStorage();
+  // return [[], false];
+
+  const lastTime: number | undefined = await getLocalStorageItem(ide.concat("-lastTime"));
+  if (mtime === lastTime) {
+    return [JSON.parse(<string>await getLocalStorageItem(ide.concat("-stdout"))), true];
+  }
+
+  return [[], false];
 }

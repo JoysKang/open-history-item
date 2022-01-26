@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
-import { randomId } from "@raycast/api";
+import { randomId, setLocalStorageItem } from "@raycast/api";
 import { basename } from "path";
-import { checkPath, home, Project } from "./util";
+import { checkPath, getLocalStorage, home, Project } from "./util";
 
 
 function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; workspace: { configPath: string; }; }) {
@@ -10,13 +10,19 @@ function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; w
 
 
 export async function getVSCodeProjects(): Promise<Project[]> {
-  const fileName = home.concat("/Library/Application Support/Code/storage.json");
-  const [isExist, atime, _] = checkPath(fileName);
+  const file = home.concat("/Library/Application Support/Code/storage.json");
+  const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {
     return []
   }
 
-  let data = readFileSync(fileName).toString();
+  // 读取缓存
+  const [LocalStorageData, isGet] = await getLocalStorage(file, "Visual Studio Code", mtime);
+  if (isGet) {
+    return LocalStorageData
+  }
+
+  let data = readFileSync(file).toString();
   if (!data.length) {
     return [];
   }
@@ -44,5 +50,7 @@ export async function getVSCodeProjects(): Promise<Project[]> {
       atime: atime
     });
   }
+  await setLocalStorageItem("Visual Studio Code-stdout", JSON.stringify(projectList));
+  await setLocalStorageItem("Visual Studio Code-lastTime", mtime);
   return projectList;
 }

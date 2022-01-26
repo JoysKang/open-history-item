@@ -1,17 +1,23 @@
-import { randomId, Application } from "@raycast/api";
+import { randomId, Application, setLocalStorageItem } from "@raycast/api";
 import { readFileSync } from "fs";
 import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { parseString } from "xml2js";
-import { checkPath, searchFiles, home, Project } from "./util";
+import { checkPath, searchFiles, home, Project, getLocalStorage } from "./util";
 import { Buffer } from "buffer";
 
 
-async function jetBrainsParsers(data: Buffer, fileName: string, apps: Application[]): Promise<Project[]> {
-  const projectList: Project[] = [];
-  const ideName: RegExpMatchArray | null = fileName.split("JetBrains/")[1].match(/^[A-Za-z]+/);
+async function jetBrainsParsers(data: Buffer, file: string, mtime: number, apps: Application[]): Promise<Project[]> {
+  const ideName: RegExpMatchArray | null = file.split("JetBrains/")[1].match(/^[A-Za-z]+/);
   const ide = ideName ? ideName[0] : "";
+  // 读取缓存
+  const [LocalStorageData, isGet] = await getLocalStorage(file, ide, mtime);
+  if (isGet) {
+    return LocalStorageData
+  }
+
+  const projectList: Project[] = [];
   const icon: string = ideName ? "icons/".concat(ide).concat(".png") : "";
   const executableFile = await getJetBrainsExecutableFileFile(ide, apps);
 
@@ -43,6 +49,8 @@ async function jetBrainsParsers(data: Buffer, fileName: string, apps: Applicatio
       });
     }
   });
+  await setLocalStorageItem(ide.concat("-stdout"), JSON.stringify(projectList));
+  await setLocalStorageItem(ide.concat("-lastTime"), mtime);
   return projectList;
 }
 
@@ -52,7 +60,7 @@ export async function getJetBrainsProjects(apps: Application[]): Promise<Project
   const fileList = searchFiles("/Library/Application Support/JetBrains/");
   const projectList: Project[] = [];
   for (const file of fileList) {
-    const isExist = checkPath(file)[0];
+    const [isExist, _, mtime] = checkPath(file);
     if (!isExist) {
       continue;
     }
@@ -62,7 +70,7 @@ export async function getJetBrainsProjects(apps: Application[]): Promise<Project
       continue;
     }
 
-    const projects: Project[] = await jetBrainsParsers(data, file, apps);
+    const projects: Project[] = await jetBrainsParsers(data, file, mtime, apps);
     if (projects.length) {
       projectList.push(...projects);
     }
