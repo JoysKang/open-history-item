@@ -1,4 +1,4 @@
-import { getLocalStorageItem, randomId, setLocalStorageItem, clearLocalStorage } from "@raycast/api";
+import { randomId, setLocalStorageItem } from "@raycast/api";
 import { execSync } from "child_process";
 import { home, Project, checkPath, getLocalStorage } from "./util";
 import { basename } from "path";

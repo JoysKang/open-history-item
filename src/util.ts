@@ -1,6 +1,6 @@
 import { lstatSync, readdirSync } from "fs";
 import { homedir } from "os"
-import { getLocalStorageItem, setLocalStorageItem } from "@raycast/api";
+import { getLocalStorageItem } from "@raycast/api";
 
 
 // home directory

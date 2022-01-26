@@ -22,7 +22,7 @@ export async function getVSCodeProjects(): Promise<Project[]> {
     return LocalStorageData
   }
 
-  let data = readFileSync(file).toString();
+  let data: string = readFileSync(file).toString();
   if (!data.length) {
     return [];
   }
