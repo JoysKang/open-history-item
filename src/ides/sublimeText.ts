@@ -1,6 +1,15 @@
 import { readFileSync } from "fs";
 import { basename } from "path";
-import { checkPath, getLocalStorage, home, Project, Configs, removeLocalStorage, setLocalStorage } from "../util";
+import {
+  checkPath,
+  getLocalStorage,
+  home,
+  Project,
+  Configs,
+  removeLocalStorage,
+  setLocalStorage,
+  getProjectUrl
+} from "../util";
 import { randomId } from "@raycast/api";
 
 export async function sublimeParsers(configs: Configs): Promise<Project[]> {
@@ -42,6 +51,7 @@ export async function sublimeParsers(configs: Configs): Promise<Project[]> {
       path: item,
       executableFile: "",
       category: "sublimeText",
+      gitUrl: getProjectUrl(item),
       atime: atime
     });
   }

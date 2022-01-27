@@ -1,6 +1,15 @@
 import { randomId } from "@raycast/api";
 import { execSync } from "child_process";
-import { home, Project, Configs, checkPath, getLocalStorage, removeLocalStorage, setLocalStorage } from "../util";
+import {
+  home,
+  Project,
+  Configs,
+  checkPath,
+  getLocalStorage,
+  removeLocalStorage,
+  setLocalStorage,
+  getProjectUrl
+} from "../util";
 import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isEmpty, isNil } = require('licia');
@@ -72,6 +81,7 @@ export async function getXcodeParsers(configs: Configs) {
       path: projectPath,
       executableFile: "",
       category: "Xcode",
+      gitUrl: getProjectUrl(projectPath),
       atime: atime
     });
   }

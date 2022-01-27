@@ -1,6 +1,9 @@
 import { lstatSync, readdirSync } from "fs";
 import { homedir } from "os"
-import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from "@raycast/api";
+import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem, environment } from "@raycast/api";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import parse from 'parse-git-config';
 
 
 // home directory
@@ -15,6 +18,7 @@ export type Project = {
   path: string;
   executableFile: string;
   category: string;
+  gitUrl: string;
   atime: number;
 };
 
@@ -117,8 +121,11 @@ export function searchFiles(element: string): string[] {
 
 export async function getLocalStorage(file: string, ide: string, mtime: number): Promise<[[], boolean]> {
   // 清空缓存, 测试用
-  // await clearLocalStorage();
-  // return [[], false];
+  if (environment.isDevelopment) {
+    await removeLocalStorageItem(file)
+    return [[], false];
+  }
+
 
   const lastTime: number | undefined = await getLocalStorageItem(ide.concat("-lastTime"));
   if (mtime === lastTime) {
@@ -130,18 +137,23 @@ export async function getLocalStorage(file: string, ide: string, mtime: number):
 
 
 export async function setLocalStorage(projectList:Project[], ide: string, mtime: number) {
-  // 清空缓存, 测试用
-  // await clearLocalStorage();
-
   await setLocalStorageItem(ide.concat("-stdout"), JSON.stringify(projectList));
   await setLocalStorageItem(ide.concat("-lastTime"), mtime);
 }
 
 
 export async function removeLocalStorage(ide: string) {
-  // 清空缓存, 测试用
-  // await clearLocalStorage();
-
   await removeLocalStorageItem(ide.concat("-lastTime"));
   await removeLocalStorageItem(ide.concat("-stdout"));
+}
+
+
+export function getProjectUrl(path: string): string {
+  const gitConfig = parse.sync({ cwd: path, path: ".git/config", expandKeys: true });
+  // console.log(gitConfig);
+  if (gitConfig.remote && gitConfig.remote.origin) {
+    return gitConfig.remote.origin.url.replace(':', '/').replace('git@', 'https://').replace('.git', '');
+  } else {
+    return "";
+  }
 }

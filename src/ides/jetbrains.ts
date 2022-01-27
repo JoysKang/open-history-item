@@ -4,7 +4,16 @@ import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { parseString } from "xml2js";
-import { checkPath, Configs, getLocalStorage, home, Project, removeLocalStorage, searchFiles } from "../util";
+import {
+  checkPath,
+  Configs,
+  getLocalStorage,
+  getProjectUrl,
+  home,
+  Project,
+  removeLocalStorage,
+  searchFiles
+} from "../util";
 import { Buffer } from "buffer";
 
 
@@ -50,6 +59,7 @@ async function jetBrainsParsers(data: Buffer, file: string, mtime: number, apps:
         path: projectPath,
         executableFile: executableFile,
         category: "JetBrains",
+        gitUrl: getProjectUrl(projectPath),
         atime: atime
       });
     }

@@ -6,6 +6,7 @@ import {
   closeMainWindow,
   ShowInFinderAction,
   CopyToClipboardAction,
+  OpenInBrowserAction,
   ToastStyle,
   Application } from "@raycast/api";
 import React from "react";
@@ -118,8 +119,25 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
             content={project.path}
             shortcut={{ modifiers: ["cmd"], key: "p" }}
           />
+          { getOpenInBrowserAction(project) }
         </ActionPanel>
       }
+    />
+  );
+}
+
+
+function getOpenInBrowserAction(project: Project) {
+  if (!project.gitUrl) {
+    return null;
+  }
+  return (
+    <OpenInBrowserAction
+      title={"Open on Browser"}
+      key={ project.key }
+      url={ project.gitUrl }
+      onOpen={() => project.name}
+      shortcut={{ modifiers: ["cmd"], key: "b" }}
     />
   );
 }

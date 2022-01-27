@@ -1,7 +1,16 @@
 import { readFileSync } from "fs";
 import { randomId } from "@raycast/api";
 import { basename } from "path";
-import { checkPath, getLocalStorage, home, Project, Configs, removeLocalStorage, setLocalStorage } from "../util";
+import {
+  checkPath,
+  getLocalStorage,
+  home,
+  Project,
+  Configs,
+  removeLocalStorage,
+  setLocalStorage,
+  getProjectUrl
+} from "../util";
 
 
 function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; workspace: { configPath: string; }; }) {
@@ -52,6 +61,7 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
       path: projectPath,
       executableFile: "",
       category: "vscode",
+      gitUrl: getProjectUrl(projectPath),
       atime: atime
     });
   }
