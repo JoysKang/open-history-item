@@ -8,10 +8,12 @@ import {
   getLocalStorageItem,
   setLocalStorageItem,
   closeMainWindow,
-  showToast
+  showToast,
+  showHUD,
+  ImageMask
 } from "@raycast/api";
 import React, { useEffect, useState } from "react";
-import { Configs, Project } from "./util";
+import { Configs } from "./util";
 
 
 export default function Command() {
@@ -32,7 +34,6 @@ export default function Command() {
 
   if (isLoading) {
     return <Form isLoading={isLoading}>{}</Form>;
-
   }
 
   return (
@@ -44,16 +45,16 @@ export default function Command() {
       }
     >
       <Form.TagPicker id="JetBrains" title="JetBrains" defaultValue={ state.configs["JetBrains"] }>
-        <Form.TagPicker.Item value="PyCharm" title="PyCharm" icon="icons/PyCharm.png"/>
-        <Form.TagPicker.Item value="WebStorm" title="WebStorm" icon="icons/WebStorm.png"/>
-        <Form.TagPicker.Item value="GoLand" title="GoLand" icon="icons/GoLand.png"/>
-        <Form.TagPicker.Item value="RubyMine" title="RubyMine" icon="icons/RubyMine.png"/>
-        <Form.TagPicker.Item value="Rider" title="Rider" icon="icons/Rider.png"/>
-        <Form.TagPicker.Item value="PhpStorm" title="PhpStorm" icon="icons/PhpStorm.png"/>
-        <Form.TagPicker.Item value="IntelliJ IDEA" title="IntelliJ IDEA" icon="icons/IntelliJ IDEA.png"/>
-        <Form.TagPicker.Item value="DataGrip" title="DataGrip" icon="icons/DataGrip.png"/>
-        <Form.TagPicker.Item value="CLion" title="CLion" icon="icons/CLion.png"/>
-        <Form.TagPicker.Item value="AppCode" title="AppCode" icon="icons/AppCode.png"/>
+        <Form.TagPicker.Item value="PyCharm" title="PyCharm" icon="small_size/PyCharm.png"/>
+        <Form.TagPicker.Item value="WebStorm" title="WebStorm" icon="small_size/WebStorm.png"/>
+        <Form.TagPicker.Item value="GoLand" title="GoLand" icon="small_size/GoLand.png"/>
+        <Form.TagPicker.Item value="RubyMine" title="RubyMine" icon="small_size/RubyMine.png"/>
+        <Form.TagPicker.Item value="Rider" title="Rider" icon="small_size/Rider.png"/>
+        <Form.TagPicker.Item value="PhpStorm" title="PhpStorm" icon="small_size/PhpStorm.png"/>
+        <Form.TagPicker.Item value="IntelliJ IDEA" title="IntelliJ IDEA" icon="small_size/IntelliJ IDEA.png"/>
+        <Form.TagPicker.Item value="DataGrip" title="DataGrip" icon="small_size/DataGrip.png"/>
+        <Form.TagPicker.Item value="CLion" title="CLion" icon="small_size/CLion.png"/>
+        <Form.TagPicker.Item value="AppCode" title="AppCode" icon="small_size/AppCode.png"/>
       </Form.TagPicker>
 
       <Form.Dropdown id="Visual Studio Code" title="Visual Studio Code" defaultValue={ state.configs["Visual Studio Code"] }>
@@ -100,6 +101,6 @@ export async function getConfigsFromLocalStorage(): Promise<Configs> {
 async function setConfigsToLocalStorage(configs: Configs) {
   configs.FromLocalStorage = true;
   await setLocalStorageItem("configs", JSON.stringify(configs));
-  showToast(ToastStyle.Success, "Saved");
-  closeMainWindow();  // 关闭主窗口
+  await showHUD("Saved");
+  await closeMainWindow();  // 关闭主窗口
 }
