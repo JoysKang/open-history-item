@@ -19,6 +19,15 @@ export type Project = {
 };
 
 
+export type Configs = {
+  FromLocalStorage: boolean;
+  Xcode: string;
+  JetBrains: string[];
+  'Visual Studio Code': string;
+  'Sublime Text': string;
+};
+
+
 // 判断路径是否存在
 export function checkPath(path: string): [boolean, number, number] {
   try {

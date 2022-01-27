@@ -1,9 +1,13 @@
 import { readFileSync } from "fs";
 import { basename } from "path";
-import { checkPath, getLocalStorage, home, Project, removeLocalStorage, setLocalStorage } from "../util";
+import { checkPath, getLocalStorage, home, Project, Configs, removeLocalStorage, setLocalStorage } from "../util";
 import { randomId } from "@raycast/api";
 
-export async function sublimeParsers(): Promise<Project[]> {
+export async function sublimeParsers(configs: Configs): Promise<Project[]> {
+  if (configs['Sublime Text'] !== "enable") {
+    return [];
+  }
+
   const file = home.concat("/Library/Application Support/Sublime Text/Local/Session.sublime_session");
   const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {

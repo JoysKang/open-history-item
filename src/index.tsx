@@ -7,6 +7,7 @@ import { getVSCodeProjects } from "./ides/vscode";
 import { getXcodeParsers } from "./ides/xcode";
 import { sublimeParsers } from "./ides/sublimeText";
 import { Project } from "./util";
+import { getConfigsFromLocalStorage } from "./configure";
 
 
 export default function Command() {
@@ -26,10 +27,11 @@ export default function Command() {
   useEffect(() => {
     async function getApps() {
       const apps = await getApplications();
-      const jetbrains = await getJetBrainsProjects(apps);
-      const vscode = await getVSCodeProjects();
-      const xcode = await getXcodeParsers();
-      const sublimeText = await sublimeParsers();
+      const configs = await getConfigsFromLocalStorage();
+      const jetbrains = await getJetBrainsProjects(apps, configs);
+      const vscode = await getVSCodeProjects(configs);
+      const xcode = await getXcodeParsers(configs);
+      const sublimeText = await sublimeParsers(configs);
       setState((oldState) => ({
         ...oldState,
         apps: apps,

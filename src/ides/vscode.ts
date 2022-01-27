@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import { randomId } from "@raycast/api";
 import { basename } from "path";
-import { checkPath, getLocalStorage, home, Project, removeLocalStorage, setLocalStorage } from "../util";
+import { checkPath, getLocalStorage, home, Project, Configs, removeLocalStorage, setLocalStorage } from "../util";
 
 
 function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; workspace: { configPath: string; }; }) {
@@ -9,7 +9,11 @@ function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; w
 }
 
 
-export async function getVSCodeProjects(): Promise<Project[]> {
+export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
+  if (configs['Visual Studio Code'] !== "enable") {
+    return [];
+  }
+
   const file = home.concat("/Library/Application Support/Code/storage.json");
   const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {

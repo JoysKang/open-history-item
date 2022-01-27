@@ -1,6 +1,6 @@
 import { randomId } from "@raycast/api";
 import { execSync } from "child_process";
-import { home, Project, checkPath, getLocalStorage, removeLocalStorage, setLocalStorage } from "../util";
+import { home, Project, Configs, checkPath, getLocalStorage, removeLocalStorage, setLocalStorage } from "../util";
 import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isEmpty, isNil } = require('licia');
@@ -42,7 +42,11 @@ function readXcodeHistory() : string[] {
 }
 
 
-export async function getXcodeParsers() {
+export async function getXcodeParsers(configs: Configs) {
+  if (configs['Xcode'] !== "enable") {
+    return [];
+  }
+
   const file = home.concat("/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2")
   // 读取 atime, mtime
   const [isExist, atime, mtime] = checkPath(file);

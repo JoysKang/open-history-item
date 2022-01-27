@@ -4,7 +4,7 @@ import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { parseString } from "xml2js";
-import { checkPath, getLocalStorage, home, Project, removeLocalStorage, searchFiles } from "../util";
+import { checkPath, Configs, getLocalStorage, home, Project, removeLocalStorage, searchFiles } from "../util";
 import { Buffer } from "buffer";
 
 
@@ -61,13 +61,16 @@ async function jetBrainsParsers(data: Buffer, file: string, mtime: number, apps:
 
 
 // 获取 JetBrains 的项目列表
-export async function getJetBrainsProjects(apps: Application[]): Promise<Project[]> {
+export async function getJetBrainsProjects(apps: Application[], configs: Configs): Promise<Project[]> {
   const fileList = searchFiles("/Library/Application Support/JetBrains/");
   const projectList: Project[] = [];
   for (const file of fileList) {
+    const ide = await getIdeName(file);
+    if (configs['JetBrains'].indexOf(ide) === -1) { // 未启用该 IDE
+      continue;
+    }
     const [isExist, _, mtime] = checkPath(file);
     if (!isExist) {
-      const ide = await getIdeName(file);
       await removeLocalStorage(ide);
       continue;
     }
