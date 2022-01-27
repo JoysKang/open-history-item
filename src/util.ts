@@ -27,6 +27,7 @@ export type Configs = {
   FromLocalStorage: boolean;
   Xcode: string;
   JetBrains: string[];
+  'Android Studio': string;
   'Visual Studio Code': string;
   'Sublime Text': string;
 };
@@ -50,7 +51,6 @@ function readFileList(path: string, filesList: { absolutePath: string; atimeMs: 
     const stat = lstatSync(path + itm);
     const absolutePath = path + itm
     if (stat.isDirectory()) {
-
       // 过滤 AndroidStudiox.x 下的非 options 目录
       if (absolutePath.indexOf("Google") !== -1 &&
         absolutePath.indexOf("AndroidStudio") === -1 &&
@@ -59,7 +59,7 @@ function readFileList(path: string, filesList: { absolutePath: string; atimeMs: 
       }
 
       // 过滤 JetBrains 下的非 options 目录
-      if (absolutePath.indexOf("JetBrains") !== -1 &&
+      else if (absolutePath.indexOf("JetBrains") !== -1 &&
         // !/\d/.test(absolutePath) &&
         // 排除 JetBrains 下第一级的目录
         absolutePath.split('/').indexOf('JetBrains') !== absolutePath.split('/').length - 2 &&
@@ -76,26 +76,16 @@ function readFileList(path: string, filesList: { absolutePath: string; atimeMs: 
 }
 
 
-// 查找项目历史文件
+// 查找 JetBrains、AndroidStudio 项目历史文件
 export function searchFiles(element: string): string[] {
-  // xcode
-  if (element.indexOf("xcode") !== -1) {
-    return [element]
-  }
-
   // JetBrains 中 Rider 使用的是 recentSolutions.xml 其他 IDE 使用的是 recentProjects.xml
-  // 判断是文件还是文件夹
-  if (element[element.length - 1] !== "/") {    // 文件
-    return [home.concat(element)]
-  }
-
-  if (element.indexOf("Google") !== -1) {
-    const files = readFileList(home.concat(element), [])
-    return files.map(file => file.absolutePath)
-  }
-
-  // JetBrains && AndroidStudio 文件夹
+  let make = ""
   if (element.indexOf("JetBrains") !== -1) {
+    make = "JetBrains/"
+  } else if (element.indexOf("Google") !== -1) {
+    make = "Google/"
+  }
+  if (make !== "") {
     const files = [];
     const ides = new Set()
     const allRecentProjects = readFileList(home.concat(element), [])
@@ -104,7 +94,7 @@ export function searchFiles(element: string): string[] {
     allRecentProjects.sort(function(a, b){return b.atimeMs - a.atimeMs});
     for (let i = 0; i < allRecentProjects.length; i++) {
       const absolutePath = allRecentProjects[i].absolutePath;
-      const ideStr = absolutePath.split("JetBrains/")[1].substring(0, 4)
+      const ideStr = absolutePath.split(make)[1].substring(0, 4)
 
       if (!ides.has(ideStr)) {
         files.push(absolutePath)
@@ -150,7 +140,6 @@ export async function removeLocalStorage(ide: string) {
 
 export function getProjectUrl(path: string): string {
   const gitConfig = parse.sync({ cwd: path, path: ".git/config", expandKeys: true });
-  // console.log(gitConfig);
   if (gitConfig.remote && gitConfig.remote.origin) {
     return gitConfig.remote.origin.url.replace(':', '/').replace('git@', 'https://').replace('.git', '');
   } else {

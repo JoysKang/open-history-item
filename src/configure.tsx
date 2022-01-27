@@ -64,6 +64,11 @@ export default function Command() {
         <Form.Dropdown.Item value="disabled" title="disabled" icon={{ source: Icon.Circle, tintColor: Color.Red }} />
       </Form.Dropdown>
 
+      <Form.Dropdown id="Android Studio" title="Android Studio" defaultValue={ state.configs["Android Studio"] }>
+        <Form.Dropdown.Item value="enable" title="enable" icon={{ source: Icon.Circle, tintColor: Color.Green }} />
+        <Form.Dropdown.Item value="disabled" title="disabled" icon={{ source: Icon.Circle, tintColor: Color.Red }} />
+      </Form.Dropdown>
+
       <Form.Dropdown id="Sublime Text" title="Sublime Text" defaultValue={ state.configs["Sublime Text"] }>
         <Form.Dropdown.Item value="enable" title="enable" icon={{ source: Icon.Circle, tintColor: Color.Green }} />
         <Form.Dropdown.Item value="disabled" title="disabled" icon={{ source: Icon.Circle, tintColor: Color.Red }} />
@@ -83,6 +88,7 @@ export async function getConfigsFromLocalStorage(): Promise<Configs> {
     return {  // 默认启动
       "FromLocalStorage": false,
       "JetBrains": [ "PyCharm", "WebStorm", "GoLand", "RubyMine", "Rider", "PhpStorm", "IntelliJ IDEA", "DataGrip", "CLion", "AppCode" ],
+      "Android Studio": "enable",
       "Visual Studio Code": "enable",
       "Xcode": "enable",
       "Sublime Text": "enable"

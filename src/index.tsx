@@ -12,6 +12,7 @@ import {
 import React from "react";
 import { useEffect, useState } from "react";
 import { getJetBrainsProjects } from "./ides/jetbrains";
+import { getAndroidStudioProjects } from "./ides/androidStudio";
 import { getVSCodeProjects } from "./ides/vscode";
 import { getXcodeParsers } from "./ides/xcode";
 import { sublimeParsers } from "./ides/sublimeText";
@@ -24,11 +25,13 @@ export default function Command() {
   const [state, setState] = useState<{
     apps: Application[],
     jetbrains: Project[],
+    androidStudio: Project[],
     vscode: Project[],
     xcode: Project[],
     sublimeText: Project[]}>({
     apps: [],
     jetbrains: [],
+    androidStudio: [],
     vscode: [],
     xcode: [],
     sublimeText: []
@@ -38,6 +41,7 @@ export default function Command() {
       const apps = await getApplications();
       const configs = await getConfigsFromLocalStorage();
       const jetbrains = await getJetBrainsProjects(apps, configs);
+      const androidStudio = await getAndroidStudioProjects(apps, configs);
       const vscode = await getVSCodeProjects(configs);
       const xcode = await getXcodeParsers(configs);
       const sublimeText = await sublimeParsers(configs);
@@ -45,6 +49,7 @@ export default function Command() {
         ...oldState,
         apps: apps,
         jetbrains: jetbrains,
+        androidStudio: androidStudio,
         vscode: vscode,
         xcode: xcode,
         sublimeText: sublimeText
@@ -53,7 +58,7 @@ export default function Command() {
     getApps();
   }, []);
 
-  let projects = state.jetbrains.concat(state.vscode).concat(state.xcode).concat(state.sublimeText);
+  let projects = state.jetbrains.concat(state.androidStudio).concat(state.vscode).concat(state.xcode).concat(state.sublimeText);
   // 排序
   projects = projects
     .sort((item1, item2) => item2.atime - item1.atime)

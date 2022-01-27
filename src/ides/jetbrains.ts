@@ -18,12 +18,19 @@ import { Buffer } from "buffer";
 
 
 async function getIdeName(file: string): Promise<string> {
-  const ideName: RegExpMatchArray | null = file.split("JetBrains/")[1].match(/^[A-Za-z]+/);
+  let make = "";
+  if (file.indexOf("JetBrains") !== -1) {
+    make = "JetBrains/"
+  } else if (file.indexOf("Google") !== -1) {
+    make = "Google/"
+  }
+
+  const ideName: RegExpMatchArray | null = file.split(make)[1].match(/^[A-Za-z]+/);
   return ideName ? ideName[0] : "";
 }
 
 
-async function jetBrainsParsers(data: Buffer, file: string, mtime: number, apps: Application[]): Promise<Project[]> {
+export async function jetBrainsParsers(data: Buffer, file: string, mtime: number, apps: Application[]): Promise<Project[]> {
   const ide = await getIdeName(file);
   // 读取缓存
   const [LocalStorageData, isGet] = await getLocalStorage(file, ide, mtime);
