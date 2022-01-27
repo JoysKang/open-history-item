@@ -3,7 +3,7 @@
   "name": "quickopenraycast",
   "title": "QuickOpenRaycast",
   "description": "Open your historical project quickly",
-  "icon": "command-icon.png",
+  "icon": "logo.png",
   "author": "Joys",
   "license": "MIT",
   "commands": [

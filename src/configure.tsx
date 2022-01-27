@@ -3,14 +3,11 @@ import {
   Form,
   Icon,
   Color,
-  ToastStyle,
   SubmitFormAction,
   getLocalStorageItem,
   setLocalStorageItem,
   closeMainWindow,
-  showToast,
-  showHUD,
-  ImageMask
+  showHUD
 } from "@raycast/api";
 import React, { useEffect, useState } from "react";
 import { Configs } from "./util";
