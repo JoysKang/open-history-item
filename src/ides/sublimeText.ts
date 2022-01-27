@@ -36,7 +36,7 @@ export async function sublimeParsers(configs: Configs): Promise<Project[]> {
     const item = projects[i]
     projectList.push({
       key: randomId(),
-      ide: "sublime Text",
+      ide: "Sublime Text",
       icon: "icons/sublimeText.png",
       name: basename(item),
       path: item,

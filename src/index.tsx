@@ -1,5 +1,13 @@
 import { exec } from "child_process";
-import { getApplications, ActionPanel, List, showToast, closeMainWindow, ToastStyle, Application } from "@raycast/api";
+import {
+  getApplications,
+  ActionPanel, List,
+  showToast,
+  closeMainWindow,
+  ShowInFinderAction,
+  CopyToClipboardAction,
+  ToastStyle,
+  Application } from "@raycast/api";
 import React from "react";
 import { useEffect, useState } from "react";
 import { getJetBrainsProjects } from "./ides/jetbrains";
@@ -95,6 +103,20 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
                                 }
                               });
                             }}
+          />
+          <ShowInFinderAction
+            title={"Open in Finder"}
+            key="finder"
+            onShow={() => project.name}
+            path={project.path}
+            shortcut={{ modifiers: ["cmd"], key: "f" }}
+          />
+          <CopyToClipboardAction
+            title={"Copy Path to Clipboard"}
+            key="clipboard"
+            onCopy={() => project.path}
+            content={project.path}
+            shortcut={{ modifiers: ["cmd"], key: "p" }}
           />
         </ActionPanel>
       }
