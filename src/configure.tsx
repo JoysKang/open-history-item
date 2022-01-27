@@ -76,19 +76,16 @@ export default function Command() {
 
 // 从 LocalStorage 读取用户配置
 export async function getConfigsFromLocalStorage(): Promise<Configs> {
-  // 清空缓存, 测试用
-  // await clearLocalStorage();
-
   const configs = await getLocalStorageItem("configs");
   if (configs) {
     return JSON.parse(configs as string);
   } else {
     return {  // 默认启动
       "FromLocalStorage": false,
-      "JetBrains": [],
-      "Visual Studio Code": "disabled",
-      "Xcode": "disabled",
-      "Sublime Text": "disabled"
+      "JetBrains": [ "PyCharm", "WebStorm", "GoLand", "RubyMine", "Rider", "PhpStorm", "IntelliJ IDEA", "DataGrip", "CLion", "AppCode" ],
+      "Visual Studio Code": "enable",
+      "Xcode": "enable",
+      "Sublime Text": "enable"
     }
   }
 }
