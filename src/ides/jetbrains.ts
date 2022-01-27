@@ -77,27 +77,33 @@ export async function jetBrainsParsers(data: Buffer, file: string, mtime: number
 }
 
 
+async function getFileContent(apps: Application[], configs: Configs, file: string): Promise<Project[]> {
+  const ide = await getIdeName(file);
+  if (configs['JetBrains'].indexOf(ide) === -1) { // 未启用该 IDE
+    return [];
+  }
+  const [isExist, _, mtime] = checkPath(file);
+  if (!isExist) {
+    await removeLocalStorage(ide);
+    return [];
+  }
+
+  const data = readFileSync(file);
+  if (!data.length) {
+    return [];
+  }
+
+  return await jetBrainsParsers(data, file, mtime, apps);
+}
+
+
 // 获取 JetBrains 的项目列表
 export async function getJetBrainsProjects(apps: Application[], configs: Configs): Promise<Project[]> {
   const fileList = searchFiles("/Library/Application Support/JetBrains/");
   const projectList: Project[] = [];
   for (const file of fileList) {
-    const ide = await getIdeName(file);
-    if (configs['JetBrains'].indexOf(ide) === -1) { // 未启用该 IDE
-      continue;
-    }
-    const [isExist, _, mtime] = checkPath(file);
-    if (!isExist) {
-      await removeLocalStorage(ide);
-      continue;
-    }
 
-    const data = readFileSync(file);
-    if (!data.length) {
-      continue;
-    }
-
-    const projects: Project[] = await jetBrainsParsers(data, file, mtime, apps);
+    const projects = await getFileContent(apps, configs, file);
     if (projects.length) {
       projectList.push(...projects);
     }
