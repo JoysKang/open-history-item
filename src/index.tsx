@@ -55,14 +55,15 @@ export default function Command() {
         sublimeText: sublimeText
       }));
     }
-    getApps();
+    getApps().then(() => {
+      console.timeEnd()
+    });
   }, []);
 
   let projects = state.jetbrains.concat(state.androidStudio).concat(state.vscode).concat(state.xcode).concat(state.sublimeText);
   // 排序
   projects = projects
     .sort((item1, item2) => item2.atime - item1.atime)
-  console.timeEnd()
 
   return (
     <List isLoading={projects.length === 0} searchBarPlaceholder="Search your project by name...">
