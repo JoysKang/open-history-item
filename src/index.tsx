@@ -8,7 +8,8 @@ import {
   CopyToClipboardAction,
   OpenInBrowserAction,
   ToastStyle,
-  Application } from "@raycast/api";
+  Application, environment, removeLocalStorageItem
+} from "@raycast/api";
 import React from "react";
 import { useEffect, useState } from "react";
 import { getJetBrainsProjects } from "./ides/jetbrains";
@@ -21,7 +22,9 @@ import { getConfigsFromLocalStorage } from "./configure";
 
 
 export default function Command() {
-  console.time()
+  if (environment.isDevelopment) {
+    console.time()
+  }
   const [state, setState] = useState<{
     apps: Application[],
     jetbrains: Project[],
@@ -56,7 +59,9 @@ export default function Command() {
       }));
     }
     getApps().then(() => {
-      console.timeEnd()
+      if (environment.isDevelopment) {
+        console.timeEnd()
+      }
     });
   }, []);
 
