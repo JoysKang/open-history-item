@@ -30,8 +30,8 @@
 安装插件后，直接使用 **history** 命令，唤出历史项目列表，选择项目打开即可。效果如下图
 ![img.png](assets/history.png)
 
-使用 **configure** 命令，可以设置默认打开的项目，如果没有设置，则默认开启全部。
-![](assets/configure.png)
+使用 **config** 命令，可以设置默认打开的项目，如果没有设置，则默认开启全部。
+![](assets/config.png)
 
 ## LICENSE
 

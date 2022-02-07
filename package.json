@@ -2,7 +2,7 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "quickopenraycast",
   "title": "QuickOpenRaycast",
-  "description": "Open your historical project quickly",
+  "description": "Quickly open your historical projects",
   "icon": "logo.png",
   "author": "Joys",
   "license": "MIT",
@@ -10,13 +10,13 @@
     {
       "name": "index",
       "title": "History",
-      "description": "Open your historical project quickly",
+      "description": "Quickly open your historical projects.",
       "mode": "view"
     },
     {
-      "name": "configure",
-      "title": "Configure",
-      "description": "Configure your settings",
+      "name": "config",
+      "title": "Config",
+      "description": "your Config.",
       "mode": "view"
     }
   ],

@@ -20,7 +20,7 @@ import { getVSCodeProjects } from "./ides/vscode";
 import { getXcodeParsers } from "./ides/xcode";
 import { sublimeParsers } from "./ides/sublimeText";
 import { Project } from "./util";
-import { getConfigsFromLocalStorage } from "./configure";
+import { getConfigsFromLocalStorage } from "./config";
 
 export default function Command() {
   // if (environment.isDevelopment) {
