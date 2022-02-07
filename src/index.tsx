@@ -1,14 +1,16 @@
 import { exec } from "child_process";
 import {
   getApplications,
-  ActionPanel, List,
+  ActionPanel,
+  List,
   showToast,
   closeMainWindow,
   ShowInFinderAction,
   CopyToClipboardAction,
   OpenInBrowserAction,
   ToastStyle,
-  Application, environment, removeLocalStorageItem
+  Application,
+  // environment,
 } from "@raycast/api";
 import React from "react";
 import { useEffect, useState } from "react";
@@ -20,24 +22,24 @@ import { sublimeParsers } from "./ides/sublimeText";
 import { Project } from "./util";
 import { getConfigsFromLocalStorage } from "./configure";
 
-
 export default function Command() {
-  if (environment.isDevelopment) {
-    console.time()
-  }
+  // if (environment.isDevelopment) {
+  //   console.time();
+  // }
   const [state, setState] = useState<{
-    apps: Application[],
-    jetbrains: Project[],
-    androidStudio: Project[],
-    vscode: Project[],
-    xcode: Project[],
-    sublimeText: Project[]}>({
+    apps: Application[];
+    jetbrains: Project[];
+    androidStudio: Project[];
+    vscode: Project[];
+    xcode: Project[];
+    sublimeText: Project[];
+  }>({
     apps: [],
     jetbrains: [],
     androidStudio: [],
     vscode: [],
     xcode: [],
-    sublimeText: []
+    sublimeText: [],
   });
   useEffect(() => {
     async function getApps() {
@@ -55,20 +57,24 @@ export default function Command() {
         androidStudio: androidStudio,
         vscode: vscode,
         xcode: xcode,
-        sublimeText: sublimeText
+        sublimeText: sublimeText,
       }));
     }
+
     getApps().then(() => {
-      if (environment.isDevelopment) {
-        console.timeEnd()
-      }
+      // if (environment.isDevelopment) {
+      //   console.timeEnd();
+      // }
     });
   }, []);
 
-  let projects = state.jetbrains.concat(state.androidStudio).concat(state.vscode).concat(state.xcode).concat(state.sublimeText);
+  let projects = state.jetbrains
+    .concat(state.androidStudio)
+    .concat(state.vscode)
+    .concat(state.xcode)
+    .concat(state.sublimeText);
   // 排序
-  projects = projects
-    .sort((item1, item2) => item2.atime - item1.atime)
+  projects = projects.sort((item1, item2) => item2.atime - item1.atime);
 
   return (
     <List isLoading={projects.length === 0} searchBarPlaceholder="Search your project by name...">
@@ -79,8 +85,7 @@ export default function Command() {
   );
 }
 
-
-function ProjectListItem(props: { project: Project, apps: Application[] }) {
+function ProjectListItem(props: { project: Project; apps: Application[] }) {
   const project = props.project;
   const title = "Open Project in " + project.ide;
   let cmd = "";
@@ -104,17 +109,19 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
       icon={project.icon}
       actions={
         <ActionPanel>
-          <ActionPanel.Item title={title}
-                            icon={project.icon}
-                            onAction={() => {
-                              exec(cmd, (err) => {
-                                if (err) {  // 如果执行失败，则提示
-                                  showToast(ToastStyle.Failure, err?.message);
-                                } else {
-                                  closeMainWindow();  // 关闭主窗口
-                                }
-                              });
-                            }}
+          <ActionPanel.Item
+            title={title}
+            icon={project.icon}
+            onAction={() => {
+              exec(cmd, (err) => {
+                if (err) {
+                  // 如果执行失败，则提示
+                  showToast(ToastStyle.Failure, err?.message);
+                } else {
+                  closeMainWindow(); // 关闭主窗口
+                }
+              });
+            }}
           />
           <ShowInFinderAction
             title={"Open in Finder"}
@@ -130,13 +137,12 @@ function ProjectListItem(props: { project: Project, apps: Application[] }) {
             content={project.path}
             shortcut={{ modifiers: ["cmd"], key: "p" }}
           />
-          { getOpenInBrowserAction(project) }
+          {getOpenInBrowserAction(project)}
         </ActionPanel>
       }
     />
   );
 }
-
 
 function getOpenInBrowserAction(project: Project) {
   if (!project.gitUrl) {
@@ -145,8 +151,8 @@ function getOpenInBrowserAction(project: Project) {
   return (
     <OpenInBrowserAction
       title={"Open on Browser"}
-      key={ project.key }
-      url={ project.gitUrl }
+      key={project.key}
+      url={project.gitUrl}
       onOpen={() => project.name}
       shortcut={{ modifiers: ["cmd"], key: "b" }}
     />

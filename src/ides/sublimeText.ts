@@ -8,12 +8,12 @@ import {
   Configs,
   removeLocalStorage,
   setLocalStorage,
-  getProjectUrl
+  getProjectUrl,
 } from "../util";
 import { randomId } from "@raycast/api";
 
 export async function sublimeParsers(configs: Configs): Promise<Project[]> {
-  if (configs['Sublime Text'] !== "enable") {
+  if (configs["Sublime Text"] !== "enable") {
     return [];
   }
 
@@ -21,16 +21,16 @@ export async function sublimeParsers(configs: Configs): Promise<Project[]> {
   const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {
     await removeLocalStorage("sublimeText"); // remove old data
-    return []
+    return [];
   }
 
   // 读取缓存
   const [LocalStorageData, isGet] = await getLocalStorage(file, "sublimeText", mtime);
   if (isGet) {
-    return LocalStorageData
+    return LocalStorageData;
   }
 
-  let data: string = readFileSync(file).toString()
+  let data: string = readFileSync(file).toString();
   if (!data.length) {
     return [];
   }
@@ -38,11 +38,11 @@ export async function sublimeParsers(configs: Configs): Promise<Project[]> {
   data = JSON.parse(data);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const projects = data["folder_history"].concat(data['settings']['new_window_settings']["file_history"])
+  const projects = data["folder_history"].concat(data["settings"]["new_window_settings"]["file_history"]);
 
-  const projectList = []
+  const projectList = [];
   for (let i = 0; i < projects.length; i++) {
-    const item = projects[i]
+    const item = projects[i];
     projectList.push({
       key: randomId(),
       ide: "Sublime Text",
@@ -52,7 +52,7 @@ export async function sublimeParsers(configs: Configs): Promise<Project[]> {
       executableFile: "",
       category: "sublimeText",
       gitUrl: getProjectUrl(item),
-      atime: atime
+      atime: atime,
     });
   }
 

@@ -8,12 +8,11 @@ import {
   getLocalStorage,
   removeLocalStorage,
   setLocalStorage,
-  getProjectUrl
+  getProjectUrl,
 } from "../util";
 import { basename } from "path";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { isEmpty, isNil } = require('licia');
-
+const { isEmpty, isNil } = require("licia");
 
 function generateScript(configPath: string): string {
   return `osascript -e "use framework \\"Foundation\\"
@@ -35,44 +34,46 @@ function generateScript(configPath: string): string {
         on error
           {}
         end try"
-        `
+        `;
 }
 
-
-function readXcodeHistory() : string[] {
+function readXcodeHistory(): string[] {
   // 判断 com.apple.dt.xcode.sfl2 文件是否存在
-  const configPath = home.concat("/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2")
-  const result = execSync(generateScript(configPath), {encoding: 'utf-8'})
+  const configPath = home.concat(
+    "/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2"
+  );
+  const result = execSync(generateScript(configPath), { encoding: "utf-8" });
   if (!isNil(result) && !isEmpty(result)) {
-    return result.split(', ').map(p => p.trim())
+    return result.split(", ").map((p) => p.trim());
   }
 
   return [];
 }
 
-
 export async function getXcodeParsers(configs: Configs) {
-  if (configs['Xcode'] !== "enable") {
+  if (configs["Xcode"] !== "enable") {
     return [];
   }
 
-  const file = home.concat("/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2")
+  const file = home.concat(
+    "/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.dt.xcode.sfl2"
+  );
   // 读取 atime, mtime
   const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {
     await removeLocalStorage("sublimeText");
-    return []
+    return [];
   }
 
   const [LocalStorageData, isGet] = await getLocalStorage(file, "xcode", mtime);
   if (isGet) {
-    return LocalStorageData
+    return LocalStorageData;
   }
 
   const data = readXcodeHistory();
   const projectList: Project[] = [];
   for (let i = 0; i < data.length; i++) {
-    const projectPath = data[i]
+    const projectPath = data[i];
     projectList.push({
       key: randomId(),
       ide: "Xcode",
@@ -82,7 +83,7 @@ export async function getXcodeParsers(configs: Configs) {
       executableFile: "",
       category: "Xcode",
       gitUrl: getProjectUrl(projectPath),
-      atime: atime
+      atime: atime,
     });
   }
   await setLocalStorage(projectList, "xcode", mtime); // 缓存数据

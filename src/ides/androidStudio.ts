@@ -4,18 +4,17 @@ import { checkPath, Configs, Project, removeLocalStorage, searchFiles } from "..
 import { readFileSync } from "fs";
 import { jetBrainsParsers } from "./jetbrains";
 
-
 export async function getAndroidStudioProjects(apps: Application[], configs: Configs): Promise<Project[]> {
-  if (configs['Android Studio'] !== "enable") {
+  if (configs["Android Studio"] !== "enable") {
     return [];
   }
 
   const fileList = searchFiles("/Library/Application Support/Google/");
   const projectList: Project[] = [];
   for (const file of fileList) {
-    const [isExist, _, mtime] = checkPath(file);
+    const [isExist, , mtime] = checkPath(file);
     if (!isExist) {
-      await removeLocalStorage('Android Studio');
+      await removeLocalStorage("Android Studio");
       continue;
     }
 

@@ -9,17 +9,15 @@ import {
   Configs,
   removeLocalStorage,
   setLocalStorage,
-  getProjectUrl
+  getProjectUrl,
 } from "../util";
 
-
-function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; workspace: { configPath: string; }; }) {
-  return vsProject?.folderUri || vsProject?.fileUri || vsProject?.workspace?.configPath
+function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; workspace: { configPath: string } }) {
+  return vsProject?.folderUri || vsProject?.fileUri || vsProject?.workspace?.configPath;
 }
 
-
 export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
-  if (configs['Visual Studio Code'] !== "enable") {
+  if (configs["Visual Studio Code"] !== "enable") {
     return [];
   }
 
@@ -27,13 +25,13 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
   const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {
     await removeLocalStorage("sublimeText");
-    return []
+    return [];
   }
 
   // 读取缓存
   const [LocalStorageData, isGet] = await getLocalStorage(file, "Visual Studio Code", mtime);
   if (isGet) {
-    return LocalStorageData
+    return LocalStorageData;
   }
 
   let data: string = readFileSync(file).toString();
@@ -41,18 +39,18 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
     return [];
   }
 
-  data = JSON.parse(data)
+  data = JSON.parse(data);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const projects = data["openedPathsList"]["entries"]     // 需清除掉 file://
+  const projects = data["openedPathsList"]["entries"]; // 需清除掉 file://
 
-  const projectList: Project[] = []
+  const projectList: Project[] = [];
   for (let i = 0; i < projects.length; i++) {
-    const item = getVscodeProjectPath(projects[i])
-    if (typeof item !== 'string') {
-      continue
+    const item = getVscodeProjectPath(projects[i]);
+    if (typeof item !== "string") {
+      continue;
     }
-    const projectPath = item.replace("file://", "")
+    const projectPath = item.replace("file://", "");
     projectList.push({
       key: randomId(),
       ide: "Visual Studio Code",
@@ -62,7 +60,7 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
       executableFile: "",
       category: "vscode",
       gitUrl: getProjectUrl(projectPath),
-      atime: atime
+      atime: atime,
     });
   }
   await setLocalStorage(projectList, "Visual Studio Code", mtime); // 缓存数据

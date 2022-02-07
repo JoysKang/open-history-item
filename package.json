@@ -25,6 +25,7 @@
     "licia": "^1.31.0",
     "node-fetch": "^3.0.0",
     "parse-git-config": "^3.0.0",
+    "prettier": "^2.5.0",
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
@@ -39,6 +40,7 @@
   },
   "scripts": {
     "build": "ray build -e dist",
-    "dev": "ray develop"
+    "dev": "ray develop",
+    "lint": "ray lint"
   }
 }
