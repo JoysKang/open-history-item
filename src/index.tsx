@@ -43,13 +43,38 @@ export default function Command() {
   });
   useEffect(() => {
     async function getApps() {
+      let jetbrains: Project[] = [];
+      let androidStudio: Project[] = [];
+      let vscode: Project[] = [];
+      let xcode: Project[] = [];
+      let sublimeText: Project[] = [];
       const apps = await getApplications();
       const configs = await getConfigsFromLocalStorage();
-      const jetbrains = await getJetBrainsProjects(apps, configs);
-      const androidStudio = await getAndroidStudioProjects(apps, configs);
-      const vscode = await getVSCodeProjects(configs);
-      const xcode = await getXcodeParsers(configs);
-      const sublimeText = await sublimeParsers(configs);
+      try {
+        jetbrains = await getJetBrainsProjects(apps, configs);
+      } catch (e) {
+        console.error(e);
+      }
+      try {
+        androidStudio = await getAndroidStudioProjects(apps, configs);
+      } catch (e) {
+        console.error(e);
+      }
+      try {
+        vscode = await getVSCodeProjects(configs);
+      } catch (e) {
+        console.error(e);
+      }
+      try {
+        xcode = await getXcodeParsers(configs);
+      } catch (e) {
+        console.error(e);
+      }
+      try {
+        sublimeText = await sublimeParsers(configs);
+      } catch (e) {
+        console.error(e);
+      }
       setState((oldState) => ({
         ...oldState,
         apps: apps,

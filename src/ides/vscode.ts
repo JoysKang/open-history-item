@@ -40,17 +40,19 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
   }
 
   data = JSON.parse(data);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const projects = data["openedPathsList"]["entries"]; // 需清除掉 file://
+  const submenu = data["lastKnownMenubarData"]["menus"]["File"]["items"].filter((item) => item.submenu !== undefined);
+  if (!submenu.length) {
+    return [];
+  }
+  const uriList = submenu[0].submenu.items.filter((item: { uri: undefined }) => item.uri !== undefined);
+  const projects = uriList.map((item: { uri: any; path: any }) => {
+    return item.uri.path;
+  });
 
   const projectList: Project[] = [];
   for (let i = 0; i < projects.length; i++) {
-    const item = getVscodeProjectPath(projects[i]);
-    if (typeof item !== "string") {
-      continue;
-    }
-    const projectPath = item.replace("file://", "");
+    const projectPath = projects[i];
     projectList.push({
       key: randomId(),
       ide: "Visual Studio Code",
