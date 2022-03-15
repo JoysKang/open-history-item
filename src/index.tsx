@@ -116,9 +116,9 @@ function ProjectListItem(props: { project: Project; apps: Application[] }) {
   let cmd = "";
 
   if (project.category === "JetBrains") {
-    cmd = `${project.executableFile} "${project.path}"`;
+    cmd = `open -u "${project.ide}://open?file=${project.path}"`;
   } else if (project.category === "vscode") {
-    cmd = `open -u "vscode://open?file=${project.path}"`;
+    cmd = `open -u "vscode://file/${project.path}"`;
   } else if (project.category === "Xcode") {
     cmd = `open "${project.path}"`;
   } else if (project.category === "sublimeText") {
