@@ -43,7 +43,7 @@ export async function jetBrainsParsers(
 
   const projectList: Project[] = [];
   const icon: string = ide ? "icons/".concat(ide).concat(".png") : "";
-  // const executableFile = await getJetBrainsExecutableFileFile(ide, apps);
+  const executableFile = await getJetBrainsExecutableFileFile(ide, apps);
 
   parseString(data, function (err: any, result: { application: { component: any[] } }) {
     const component = result.application.component[0];
@@ -68,7 +68,7 @@ export async function jetBrainsParsers(
         icon: icon,
         name: basename(projectPath),
         path: projectPath,
-        executableFile: "",
+        executableFile: executableFile,
         category: "JetBrains",
         gitUrl: getProjectUrl(projectPath),
         atime: atime,

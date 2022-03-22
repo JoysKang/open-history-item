@@ -12,9 +12,6 @@ import {
   getProjectUrl,
 } from "../util";
 
-function getVscodeProjectPath(vsProject: { folderUri: string; fileUri: string; workspace: { configPath: string } }) {
-  return vsProject?.folderUri || vsProject?.fileUri || vsProject?.workspace?.configPath;
-}
 
 export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
   if (configs["Visual Studio Code"] !== "enable") {

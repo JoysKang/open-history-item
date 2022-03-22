@@ -116,7 +116,11 @@ function ProjectListItem(props: { project: Project; apps: Application[] }) {
   let cmd = "";
 
   if (project.category === "JetBrains") {
-    cmd = `open -u "${project.ide}://open?file=${project.path}"`;
+    if (["RubyMine", "Rider", "DataGrip"].indexOf(project.ide) !== -1) {  // RubyMine, Rider, DataGrip 不支持 url scheme
+      cmd = `${project.executableFile} "${project.path}"`;
+    } else {
+      cmd = `open -u "${project.ide}://open?file=${project.path}"`;
+    }
   } else if (project.category === "vscode") {
     cmd = `open -u "vscode://file/${project.path}"`;
   } else if (project.category === "Xcode") {
