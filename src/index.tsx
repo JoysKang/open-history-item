@@ -19,7 +19,7 @@ import { getAndroidStudioProjects } from "./ides/androidStudio";
 import { getVSCodeProjects } from "./ides/vscode";
 import { getXcodeParsers } from "./ides/xcode";
 import { sublimeParsers } from "./ides/sublimeText";
-import { Project } from "./util";
+import { Project, ExecutableFileStart } from "./util";
 import { getConfigsFromLocalStorage } from "./config";
 
 export default function Command() {
@@ -116,7 +116,7 @@ function ProjectListItem(props: { project: Project; apps: Application[] }) {
   let cmd = "";
 
   if (project.category === "JetBrains") {
-    if (["RubyMine", "Rider", "DataGrip"].indexOf(project.ide) !== -1) {  // RubyMine, Rider, DataGrip 不支持 url scheme
+    if (ExecutableFileStart.indexOf(project.ide) !== -1) {  // ExecutableFileStart 是不支持和 url scheme 的 ide
       cmd = `${project.executableFile} "${project.path}"`;
     } else {
       cmd = `open -u "${project.ide}://open?file=${project.path}"`;

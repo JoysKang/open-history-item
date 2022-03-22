@@ -4,6 +4,7 @@ import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem, envir
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import parse from "parse-git-config";
+import { execFile } from "child_process";
 
 // home directory
 export const home = homedir();
@@ -28,6 +29,12 @@ export type Configs = {
   "Visual Studio Code": string;
   "Sublime Text": string;
 };
+
+export const ExecutableFileStart: string[] = [
+  "RubyMine",
+  "Rider",
+  "DataGrip"
+]
 
 // 判断路径是否存在
 export function checkPath(path: string): [boolean, number, number] {
