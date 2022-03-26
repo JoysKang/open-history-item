@@ -1,10 +1,9 @@
-import { lstatSync, readdirSync } from "fs";
-import { homedir } from "os";
-import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem, environment } from "@raycast/api";
+import {lstatSync, readdirSync} from "fs";
+import {homedir} from "os";
+import {environment, getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem} from "@raycast/api";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import parse from "parse-git-config";
-import { execFile } from "child_process";
 
 // home directory
 export const home = homedir();
@@ -147,4 +146,18 @@ export function getProjectUrl(path: string): string {
   } else {
     return "";
   }
+}
+
+export function getTime(timestamp: number): string {
+  let day: string | number = "",
+      month: string | number = "",
+      hours: string | number = "",
+      minutes: string | number = "",
+      d = new Date(timestamp);
+
+  day = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
+  month = d.getMonth() + 1 < 10 ? '0' + (d.getMonth()+1) : (d.getMonth()+1);
+  hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
+  minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+  return (d.getFullYear() + "-" + month + "-" + day + " " + hours + ":" + minutes)
 }

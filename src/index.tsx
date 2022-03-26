@@ -10,6 +10,7 @@ import {
   OpenInBrowserAction,
   ToastStyle,
   Application,
+  Icon,
   // environment,
 } from "@raycast/api";
 import React from "react";
@@ -19,7 +20,7 @@ import { getAndroidStudioProjects } from "./ides/androidStudio";
 import { getVSCodeProjects } from "./ides/vscode";
 import { getXcodeParsers } from "./ides/xcode";
 import { sublimeParsers } from "./ides/sublimeText";
-import { Project, ExecutableFileStart } from "./util";
+import {Project, ExecutableFileStart, getTime} from "./util";
 import { getConfigsFromLocalStorage } from "./config";
 
 export default function Command() {
@@ -136,6 +137,10 @@ function ProjectListItem(props: { project: Project; apps: Application[] }) {
       title={project.name}
       subtitle={project.path}
       icon={project.icon}
+      accessories={[
+        { icon: Icon.Calendar },
+        { text: getTime(Number(project.atime)).toLocaleString() },
+      ]}
       actions={
         <ActionPanel>
           <ActionPanel.Item
