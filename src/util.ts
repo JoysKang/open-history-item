@@ -1,4 +1,4 @@
-import {lstatSync, readdirSync} from "fs";
+import {lstatSync, readdirSync, readFileSync} from "fs";
 import {homedir} from "os";
 import {environment, getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem} from "@raycast/api";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -161,3 +161,11 @@ export function getTime(timestamp: number): string {
   minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
   return (d.getFullYear() + "-" + month + "-" + day + " " + hours + ":" + minutes)
 }
+
+export function readJSONFile(filePath: string): any {
+  try {
+    return JSON.parse(readFileSync(filePath, "utf-8"));
+  } catch (e) {
+    return {};
+  }
+};

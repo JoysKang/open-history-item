@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import { basename } from "path";
 import {
   checkPath,
@@ -9,6 +8,7 @@ import {
   removeLocalStorage,
   setLocalStorage,
   getProjectUrl,
+  readJSONFile,
 } from "../util";
 import { randomId } from "@raycast/api";
 
@@ -30,14 +30,10 @@ export async function sublimeParsers(configs: Configs): Promise<Project[]> {
     return LocalStorageData;
   }
 
-  let data: string = readFileSync(file).toString();
-  if (!data.length) {
+  let data: any = readJSONFile(file);
+  if (Object.keys(data).length === 0) {
     return [];
   }
-
-  data = JSON.parse(data);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   const projects = data["folder_history"].concat(data["settings"]["new_window_settings"]["file_history"]);
 
   const projectList = [];

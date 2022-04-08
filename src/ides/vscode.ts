@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import { randomId } from "@raycast/api";
 import { basename } from "path";
 import {
@@ -10,6 +9,7 @@ import {
   removeLocalStorage,
   setLocalStorage,
   getProjectUrl,
+  readJSONFile
 } from "../util";
 
 
@@ -31,13 +31,10 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
     return LocalStorageData;
   }
 
-  let data: string = readFileSync(file).toString();
-  if (!data.length) {
+  let data: any = readJSONFile(file);
+  if (Object.keys(data).length === 0) {
     return [];
   }
-
-  data = JSON.parse(data);
-  // @ts-ignore
   const submenu = data["lastKnownMenubarData"]["menus"]["File"]["items"].filter((item) => item.submenu !== undefined);
   if (!submenu.length) {
     return [];
