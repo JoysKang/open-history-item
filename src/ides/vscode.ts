@@ -31,11 +31,11 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
     return LocalStorageData;
   }
 
-  let data: any = readJSONFile(file);
+  const data: any = readJSONFile(file);
   if (Object.keys(data).length === 0) {
     return [];
   }
-  const submenu = data["lastKnownMenubarData"]["menus"]["File"]["items"].filter((item) => item.submenu !== undefined);
+  const submenu = data["lastKnownMenubarData"]["menus"]["File"]["items"].filter((item: { submenu: undefined; }) => item.submenu !== undefined);
   if (!submenu.length) {
     return [];
   }
