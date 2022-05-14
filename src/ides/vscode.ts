@@ -18,10 +18,10 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
     return [];
   }
 
-  const file = home.concat("/Library/Application Support/Code/storage.json");
+  const file = home.concat("/Library/Application Support/Code/User/globalStorage/storage.json");
   const [isExist, atime, mtime] = checkPath(file);
   if (!isExist) {
-    await removeLocalStorage("sublimeText");
+    await removeLocalStorage("Visual Studio Code");
     return [];
   }
 
