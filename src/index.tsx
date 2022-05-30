@@ -115,19 +115,24 @@ function ProjectListItem(props: { project: Project; apps: Application[] }) {
   const project = props.project;
   const title = "Open Project in " + project.ide;
   let cmd = "";
+  const encodeULIPath = encodeURIComponent(project.path) // URL 编码
 
   if (project.category === "JetBrains") {
     if (ExecutableFileStart.indexOf(project.ide) !== -1) {  // ExecutableFileStart 是不支持和 url scheme 的 ide
-      cmd = `${project.executableFile} "${project.path}"`;
+      cmd = `${project.executableFile} "${encodeULIPath}"`;
     } else {
-      cmd = `open -u "${project.ide}://open?file=${project.path}"`;
+      cmd = `open -u "${project.ide}://open?file=${encodeULIPath}"`;
     }
   } else if (project.category === "vscode") {
-    cmd = `open -u "vscode://file/${project.path}"`;
+    if (project.path.indexOf("ssh-remote") !== -1) {  // 远程项目
+      cmd = `code --remote ${encodeULIPath}`
+    } else {
+      cmd = `open -u "vscode://file/${encodeULIPath}"`;
+    }
   } else if (project.category === "Xcode") {
-    cmd = `open "${project.path}"`;
+    cmd = `open "${encodeULIPath}"`;
   } else if (project.category === "sublimeText") {
-    cmd = `open -a "sublime text" "${project.path}"`;
+    cmd = `open -a "sublime text" "${encodeULIPath}"`;
     // console.log(cmd);
   }
 

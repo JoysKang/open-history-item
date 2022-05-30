@@ -168,4 +168,4 @@ export function readJSONFile(filePath: string): any {
   } catch (e) {
     return {};
   }
-};
+}

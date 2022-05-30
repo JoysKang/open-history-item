@@ -41,6 +41,9 @@ export async function getVSCodeProjects(configs: Configs): Promise<Project[]> {
   }
   const uriList = submenu[0].submenu.items.filter((item: { uri: undefined }) => item.uri !== undefined);
   const projects = uriList.map((item: { uri: any; path: any }) => {
+    if (item.uri.authority !== undefined) {
+      return item.uri.authority + ' ' + item.uri.path
+    }
     return item.uri.path;
   });
 
